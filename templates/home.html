@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BeachTime — Le bon moment pour la plage</title>
+
+    <meta name="description"
+          content="Découvrez les meilleures plages de Nouvelle-Aquitaine selon la météo.">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">
+            <span class="logo-icon">B</span>
+            BeachTime
+        </a>
+
+        <nav>
+            <a href="#carte">Explorer</a>
+            <a href="#recommandations">Recommandations</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="hero">
+            <div class="hero-content">
+                <span class="eyebrow">
+                    VOTRE GUIDE DES PLAGES
+                </span>
+
+                <h1>
+                    La mer vous attend.<br>
+                    <span>Choisissez le bon moment.</span>
+                </h1>
+
+                <p>
+                    Découvrez les plages de Nouvelle-Aquitaine,
+                    les meilleures heures pour en profiter
+                    et tout ce qu'il faut emporter.
+                </p>
+
+                <a href="#carte" class="primary-button">
+                    Explorer les plages
+                    <span>→</span>
+                </a>
+            </div>
+
+            <div class="hero-card">
+                <span class="weather-icon">☀</span>
+                <p>Votre prochaine escapade</p>
+                <h2>Direction l'Atlantique</h2>
+                <span class="hero-card-note">
+                    Trouvez votre moment idéal.
+                </span>
+            </div>
+        </section>
+
+        <section id="carte" class="section">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">LA RÉGION ATLANTIQUE</span>
+                    <h2>Explorez les plages</h2>
+                </div>
+
+                <p>
+                    Retrouvez les conditions météo
+                    sur l'ensemble du littoral.
+                </p>
+            </div>
+
+         
+            <div id="beach-map"></div>
+
+            <div class="beach-filter">
+    <label for="department-filter">Filtrer par département :</label>
+
+    <select id="department-filter">
+        <option value="all">Tous les départements</option>
+        <option value="Gironde">Gironde</option>
+        <option value="Landes">Landes</option>
+        <option value="Charente-Maritime">Charente-Maritime</option>
+        <option value="Pyrénées-Atlantiques">Pyrénées-Atlantiques</option>
+    </select>
+</div>
+
+            <div class="beach-list">
+                {{range .Beaches}}
+                    <article class="beach-card">
+                    <h3>{{.Name}}</h3>
+                    <p>{{.City}}</p>
+
+            <div class="beach-weather-status">
+                <span class="beach-status {{.WeatherStatus}}"></span>
+                <strong>{{printf "%.0f" .Temperature}} °C</strong>
+                <span>{{.Time}}</span>
+            </div>
+
+            <div class="beach-weather-details">
+                <p>☂ Pluie : {{.RainChance}} %</p>
+                <p>💨 Vent : {{printf "%.0f" .WindSpeed}} km/h</p>
+            </div>
+
+            <p class="weather-message">{{.WeatherMessage}}</p>
+        </article>
+    {{else}}
+        <p>Aucune plage disponible.</p>
+    {{end}}
+</div>
+
+            <div class="legend">
+                <span>
+                    <i class="dot green"></i>
+                    Conditions favorables
+                </span>
+
+                <span>
+                    <i class="dot yellow"></i>
+                    Conditions mitigées
+                </span>
+
+                <span>
+                    <i class="dot red"></i>
+                    Conditions défavorables
+                </span>
+            </div>
+        </section>
+
+       <section id="recommandations" class="section">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">VOTRE PROCHAINE SORTIE</span>
+            <h2>La plage au bon moment</h2>
+        </div>
+
+        <p>
+            Découvrez les prévisions météo et les créneaux
+            les plus favorables pour profiter de la plage.
+        </p>
+    </div>
+
+    <div class="weather-panel">
+        <div class="weather-heading">
+            <div>
+                <span class="eyebrow">MÉTÉO DU PETIT NICE</span>
+                <h2>Les prévisions horaires</h2>
+                <p>La Teste-de-Buch, Gironde</p>
+            </div>
+
+            <span class="weather-badge">Données réelles</span>
+        </div>
+
+        {{if .WeatherError}}
+            <p class="weather-error">{{.WeatherError}}</p>
+        {{else}}
+            <div class="weather-grid">
+                {{range .Weather}}
+                    <article class="weather-hour">
+                        <span class="hour-time">{{.Time}}</span>
+
+                        <span class="hour-temperature">
+                            {{printf "%.0f" .Temperature}}°
+                        </span>
+
+                        <span class="hour-rain">
+                            ☂ {{.RainChance}} %
+                        </span>
+
+                        <span class="hour-wind">
+                            Vent {{printf "%.0f" .WindSpeed}} km/h
+                        </span>
+                    </article>
+                {{else}}
+                    <p>Aucune prévision disponible pour le moment.</p>
+                {{end}}
+            </div>
+        {{end}}
+    </div>
+    <div class="favorable-panel">
+    <h2>Meilleurs moments pour la plage</h2>
+
+    {{if .FavorableSlots}}
+        <ul>
+            {{range .FavorableSlots}}
+                <li>{{.Start}} – {{.End}}</li>
+            {{end}}
+        </ul>
+    {{else}}
+        <p>Aucun créneau ne correspond aux critères météo pour le moment.</p>
+    {{end}}
+    </div>
+    
+</section>
+
+    </main>
+
+    <footer>
+        <p>BeachTime — Le bon endroit. Le bon moment.</p>
+        <p>Votre guide des plages de Nouvelle-Aquitaine.</p>
+    </footer>
+<script id="beaches-data" type="application/json">
+    {{.BeachesJSON}}
+</script>
+
+<script>
+    // Initialisation de la carte
+    const map = L.map('beach-map');
+    map.setView([44.58, -1.20], 10);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // Récupération des données des plages
+    const beaches = JSON.parse(
+        document.getElementById('beaches-data').textContent
+    );
+
+    const beachCards = document.querySelectorAll('.beach-card');
+    const departmentFilter = document.getElementById('department-filter');
+
+    // Tableau pour conserver les marqueurs
+    const markers = [];
+
+    // Création des marqueurs et gestion du clic sur les cartes
+    beaches.forEach((beach, index) => {
+        let color = '#dc705e';
+
+        if (beach.WeatherStatus === 'green') {
+            color = '#35a66f';
+        } else if (beach.WeatherStatus === 'yellow') {
+            color = '#edc653';
+        }
+
+        const marker = L.circleMarker(
+            [beach.Latitude, beach.Longitude],
+            {
+                radius: 10,
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.9
+            }
+        ).addTo(map);
+
+        markers.push(marker);
+
+        marker.bindPopup(`
+            <strong>${beach.Name}</strong><br>
+            ${beach.City}<br>
+            ${beach.Temperature} °C à ${beach.Time}
+        `);
+
+        const card = beachCards[index];
+
+        if (card) {
+            card.addEventListener('click', () => {
+                map.setView(
+                    [beach.Latitude, beach.Longitude],
+                    13
+                );
+
+                marker.openPopup();
+            });
+        }
+    });
+
+    // Filtre par département
+    departmentFilter.addEventListener('change', () => {
+        const selectedDepartment = departmentFilter.value;
+
+        beaches.forEach((beach, index) => {
+            const card = beachCards[index];
+            const marker = markers[index];
+
+            const visible =
+                selectedDepartment === 'all' ||
+                beach.Department === selectedDepartment;
+
+            // Afficher ou masquer la carte
+            if (card) {
+                card.style.display = visible ? '' : 'none';
+            }
+
+            // Afficher ou masquer le marqueur
+            if (visible) {
+                marker.addTo(map);
+            } else {
+                map.removeLayer(marker);
+            }
+        });
+    });
+</script>
+</body>
+</html>
